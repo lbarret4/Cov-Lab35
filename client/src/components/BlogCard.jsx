@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import Navbar from './Navbar';
+import Card from './Card';
 class BlogCard extends Component {
 
     constructor(props) {
@@ -43,25 +44,23 @@ class BlogCard extends Component {
         let tags = this.state.tags.map((tag, index) => {
             if(this.state.tags.length !== 0){
                 return (
-            <label className={`badgeMod badge-info `} key={tag['_created'] + index}>{tag.name}</label>);
+            <label className={`badgeMod badge-info mx-2 my-1`} key={tag['_created'] + index}>{tag.name}</label>);
              }else{
                  return;
              }
         });
+        let header = blog.title;
+        let body= (<Fragment>  
+             <span className="text-right  text-muted d-block">
+             {blog.date ? blog.date.toLocaleDateString() : ''}</span>
+        {blog.content}
+        </Fragment>);
+        let footer=( tags.length !== 0 ? <Fragment><span className="d-block col-12"> Tags:</span> <span className="ml-2 form-inline">{tags}</span></Fragment> : '');
+                
         return (
             <Fragment>
                 <Navbar tab={tabTitle} path={this.props.match.url} />
-                <div className="card my-1 ">
-                    <div className="card-header text-center" >{blog.title}</div>
-                    <div className="card-body">
-                        <span className="text-right  text-muted d-block">{blog.date ? blog.date.toLocaleDateString() : ''}</span>
-                        {blog.content}
-                    </div>
-                    <div className="card-footer form-inline justify-content-around">
-                    {tags.length !== 0? <span className="d-block col-12"> Tags:</span>: ''}
-                        {tags}
-                    </div>
-                </div>
+               < Card header= {header} body={body} footer={footer} />
             </Fragment>
         );
     }
