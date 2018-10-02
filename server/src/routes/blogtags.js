@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { rows } from '../config/db';
+import { rows,empty } from '../config/db';
 import Table from '../table';
 let router = Router();
 
@@ -34,6 +34,19 @@ router.post('/', async (req, res) => {
 
         let results = await blogTags.insert(blogTagsObj);
         res.json(await results);
+
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    let id= req.params.id;
+    try {
+
+        await empty('spDeleteBlogTags',[id]);
+        res.sendStatus(200)
 
     } catch (error) {
         console.log(error);
