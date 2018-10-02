@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import BlogFeed from './BlogFeed';
-import Navbar from './Navbar';
+import * as blogsService from '../services/blogs';
 class Home extends Component {
 
     constructor(props) {
@@ -11,10 +11,9 @@ class Home extends Component {
     }
 
     async componentDidMount() {
-        let url = `http://localhost:3000/api/blogs`;
+
         try {
-            let results = await fetch(url);
-            let data = await results.json();
+            let data = await blogsService.all();
             data = await data.map((item) => {
                 item.date = new Date(item['_created']);
                 delete item["_created"];
@@ -36,7 +35,6 @@ class Home extends Component {
     render() {
         return (
             <Fragment>
-                <Navbar />
                 <main role="main">
 
                     <BlogFeed blogs={this.state.blogList} />
