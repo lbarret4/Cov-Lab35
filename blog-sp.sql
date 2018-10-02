@@ -13,3 +13,18 @@ BEGIN
 END //
 
 delimiter ;
+
+delimiter //
+
+delimiter //
+CREATE PROCEDURE spDeleteBlogTags(id int )
+BEGIN
+	DELETE 
+	FROM blogtags 
+	WHERE blogid = id;
+
+
+
+END //
+
+delimiter ;
