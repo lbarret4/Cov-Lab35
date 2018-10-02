@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 import Card from './Card';
 import * as blogsService from '../services/blogs';
 import * as blogtagsService from '../services/blogtags';
+import BlogEdit from './BlogEdit';
+import { isLoggedIn } from '../services/user';
 class BlogCard extends Component {
 
     constructor(props) {
@@ -34,6 +36,7 @@ class BlogCard extends Component {
 
     render() {
         let blog = this.state.blog;
+        let editBtn = <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#blogModal">Edit</button>;
         let tags = this.state.tags.map((tag, index) => {
             if (this.state.tags.length !== 0) {
                 return (
@@ -42,7 +45,12 @@ class BlogCard extends Component {
                 return;
             }
         });
-        let header = blog.title;
+        let header = (
+            <div className='row'>
+            <div className='col'></div>
+            <div className='col'> {blog.title}</div>
+            <div className='col d-flex justify-content-end'>{isLoggedIn()? editBtn:''}</div>          
+            </div>);
         let body = (<Fragment>
             <span className="text-right  text-muted d-block">
                 {blog.date ? blog.date.toLocaleDateString() : ''}</span>
@@ -53,6 +61,12 @@ class BlogCard extends Component {
         return (
             <Fragment>
                 < Card header={header} body={body} footer={footer} />
+                <div class="modal fade" id="blogModal" tabindex="-1" role="dialog" aria-labelledby="chirpsModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <BlogEdit edit={true} blog={blog} />
+                    </div>
+                </div>
             </Fragment>
         );
     }
