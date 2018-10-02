@@ -1,6 +1,7 @@
 import React, { Fragment, Component } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import AuthButton from './auth/authButton';
+import { isLoggedIn } from '../services/user';
 
 class Navbar extends Component {
     constructor(props) {
@@ -67,7 +68,10 @@ class Navbar extends Component {
 
                 link = <AuthButton />;
 
-            } else {
+            }else if (st === 'post' ){
+
+                link = isLoggedIn()? (<NavLink to={path} className='nav-link' activeClassName='active' >{st[0].toUpperCase() + st.substring(1)}</NavLink>) :null;
+            }else {
                 link = (<NavLink to={path} className='nav-link' activeClassName='active' >{st[0].toUpperCase() + st.substring(1)}</NavLink>);
             }
             return (
