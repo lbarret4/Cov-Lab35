@@ -18,7 +18,7 @@ class Blog extends Component {
         let truncate = "";
         let blog = this.props.blog;
         let divClass;
-        let path = `/blogs/${blog.id}/entry`;
+        let path = `/blogs/${blog.id}/`;
         if (this.props.type === 'featured') {
             title = <h1 className="display-3">{blog.title}</h1>;
             divClass = "col";
