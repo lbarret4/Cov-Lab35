@@ -34,7 +34,8 @@ CREATE TABLE blogtags
     PRIMARY KEY (blogid,tagid),
     CONSTRAINT fk_mn_blogid 
         FOREIGN KEY(blogid)
-        REFERENCES blogs(id),
+        REFERENCES blogs(id)
+        ON DELETE CASCADE,
     CONSTRAINT fk_mn_tagid
         FOREIGN KEY (tagid)
         REFERENCES tags(id)
