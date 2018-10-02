@@ -12,6 +12,8 @@ function insert(data) {
     return baseService.post('/api/blogs/blogtags', data);
 }
 
+function destroy(id) {
+    return baseService.destroy(`/api/blogs/blogtags/${id}`);
+}
 
-
-export { all, one, insert };
+export { all, one, insert, destroy};
