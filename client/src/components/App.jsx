@@ -1,8 +1,14 @@
 import React, { Component, Fragment } from 'react';
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Home from './Home';
 import BlogEdit from './BlogEdit';
 import BlogCard from './BlogCard'
+import AuthorCard from './AuthorCard';
+import ContactCard from './ContactCard';
+import Navbar from './Navbar';
+import Login from './auth/login';
+import Logout from './auth/logout';
+import PrivateRoute from './auth/privateRoute';
 
 
 class Navigation extends Component {
@@ -12,12 +18,17 @@ class Navigation extends Component {
             <Router>
                 <Fragment>
                     <div className="container">
+                        <Navbar />
                         <Switch>
                             <Route exact path="/" component={Home} />
-                            <Route exact path="/post" component={BlogEdit} />
-                            <Route exact path="/blogs/:id/entry" component={BlogCard} key={"/blogs/:id/entry"} />
-                            <Route exact path="/authors" component={BlogCard} key={"/authors"} />
-                            <Route exact path="/contact" component={BlogCard} key={"/contact"} />
+                            <Route exact path="/authors" component={AuthorCard} key={"/authors"} />
+                            <Route exact path="/contact" component={ContactCard} key={"/contact"} />
+                            <Route path="/login" component={Login} />
+                            <Route path="/logout" component={Logout} />
+                            <Route exact path="/blogs/:id/" component={BlogCard} key={"/blogs/:id/"} />
+
+                            <PrivateRoute exact path="/post" component={BlogEdit} />
+                            
                         </Switch>
                         <hr />
                     </div>
