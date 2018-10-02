@@ -1,9 +1,9 @@
 
 import React, { Component, Fragment } from 'react';
-import Navbar from './Navbar';
 import Tags from './Tags';
 import { Redirect } from 'react-router-dom';
-
+import * as blogsService from '../services/blogs';
+import * as blogtagsService from '../services/blogtags';
 
 
 class BlogEdit extends Component {
@@ -21,25 +21,18 @@ class BlogEdit extends Component {
         alert('submitted post');
         let tags = []
         let blog = {};
-        let url1 = 'http://localhost:3000/api/blogs';
+     
         let url2 = 'http://localhost:3000/api/blogs/blogtags/';
-        let options = {
-            method: 'Post',
-            body: '',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        };
+    
         for (let item of e.target) {
             if (item.type === 'checkbox' && item.checked && item.name !== 'other') tags.push(item.id);
             if (item.type === 'text' && item.name !== 'otherText') blog.title = item.value;
             if (item.type === 'textarea') blog.content = item.value;
         }
 
-        options.body = JSON.stringify(blog);
         (async () => {
             try {
-                let res1 = await fetch(url1, options);
+                let res1 = await blogsService.insert(blog);
                 res1 = await res1.json();
                 let id = await res1.id;
                 tags.forEach(async (element) => {
@@ -48,8 +41,8 @@ class BlogEdit extends Component {
                     blogTag.blogid = id;
                     blogTag.tagid = element;
 
-                    options.body = JSON.stringify(blogTag);
-                    let res2 = await fetch(url2, options);
+                    
+                    let res2 = await blogtagsService.insert(blogTag);
                 });
             } catch (error) {
                 console.log(error);
@@ -75,7 +68,7 @@ class BlogEdit extends Component {
 
         return (
             <Fragment>
-                {this.state.redirect ? <Redirect to="/" /> : <Navbar tab='post' />}
+                {this.state.redirect ? <Redirect to="/" /> :' '}
                 <div className="modal-content my-1">
                     <div className="modal-header">
                         <h5 className="modal-title">Post a blog</h5>
