@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-
+import * as tagsService from '../services/tags'
 class Tags extends Component {
 
     constructor(props) {
@@ -9,7 +9,7 @@ class Tags extends Component {
             isVisible: false,
             otherTag: '',
             otherValue: '',
-            hasAlerted:false
+            hasAlerted: false
 
         }
         this.handlesOnChange = this.handlesOnChange.bind(this);
@@ -18,12 +18,11 @@ class Tags extends Component {
     }
 
     async componentDidMount() {
-        let url = `http://localhost:3000/api/tags`;
-        try {
-            let results = await fetch(url);
-            let data = await results.json();
+    
+        try {          
+            let data = await tagsService.all();
             data.push({ name: 'other', '_created': `${new Date(Date.now())}` });
-            data = data.map((tag) => {
+            data = await data.map((tag) => {
                 if (tag.name !== 'other') {
                     tag.checked = false;
                 }
@@ -47,9 +46,9 @@ class Tags extends Component {
             this.setState({
                 isVisible: true,
                 tags: newTags,
-                hasAlerted:true
+                hasAlerted: true
             });
-           if(!this.state.hasAlerted) alert('Press Enter to add tag.');
+            if (!this.state.hasAlerted) alert('Press Enter to add tag.');
 
         } else if (target.name === 'other') {
             this.setState({
@@ -83,26 +82,18 @@ class Tags extends Component {
     }
 
     handlesOnKeyDown(e) {
-     
+
         if (e.key === 'Enter' && this.state.otherTag.length > 0) {
             e.preventDefault();
-            let url = 'http://localhost:3000/api/tags';
             let tag = {};
             tag.name = this.state.otherTag;
             tag["_created"] = new Date(Date.now());
             tag = JSON.parse(JSON.stringify(tag));
             tag["_created"] = tag["_created"].slice(0, -1);
-            let options = {
-                method: 'Post',
-                body: JSON.stringify(tag),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            };
+       
             (async () => {
                 try {
-                    let results = await fetch(url, options);
-                    results = await results.json();
+                    let results = await tagsService.insert(tag);
                     tag.id = await results.id;
                     tag.checked = true;
                     let newTags = this.state.tags;
@@ -149,7 +140,8 @@ class Tags extends Component {
                     {checkbox}
                 </div>
             );
-        })
+        });
+
         return (
             <Fragment>
                 <span className="d-block col-12"> Tags:</span>
