@@ -20,10 +20,7 @@ class BlogEdit extends Component {
     handleSubmit(e) {
         alert('submitted post');
         let tags = []
-        let blog = {};
-     
-        let url2 = 'http://localhost:3000/api/blogs/blogtags/';
-    
+        let blog = {};    
         for (let item of e.target) {
             if (item.type === 'checkbox' && item.checked && item.name !== 'other') tags.push(item.id);
             if (item.type === 'text' && item.name !== 'otherText') blog.title = item.value;
