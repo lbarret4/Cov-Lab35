@@ -12,6 +12,7 @@ class BlogCard extends Component {
             blog: {},
             tags: []
         };
+        this.handlesDelete = this.handlesDelete.bind(this);
     }
 
 
@@ -33,23 +34,35 @@ class BlogCard extends Component {
 
     }
 
+    async handlesDelete(e) {
+        e.preventDefault();
+        let id = this.props.match.params.id;
+        try {
+            let results = await blogsService.destroy(id);
+            this.props.history.replace('/')
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
 
     render() {
         let blog = this.state.blog;
-        let editBtn = <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#blogModal">Edit</button>;
+        let Btn = (<Fragment><button type="button" class="btn btn-outline-danger mx-1" onClick={this.handlesDelete}>Delete</button><button type="button" class="btn btn-outline-primary mx-1" data-toggle="modal" data-target="#blogModal">Edit</button></Fragment>);
         let tags = this.state.tags.map((tag, index) => {
             if (this.state.tags.length !== 0) {
                 return (
-                    <label className={`badgeMod badge-info mx-2 my-1`} key={tag['_created'] + index}>{tag.name}</label>);
+                    <label className={`badgeMod badge-info mx-2 my-1`} key={tag['_created']}>{tag.name}</label>);
             } else {
                 return;
             }
         });
         let header = (
             <div className='row'>
-            <div className='col'></div>
-            <div className='col'> {blog.title}</div>
-            <div className='col d-flex justify-content-end'>{isLoggedIn()? editBtn:''}</div>          
+                <div className='col'></div>
+                <div className='col'> {blog.title}</div>
+                <div className='col d-flex justify-content-end'>{isLoggedIn() ? Btn : ''}</div>
             </div>);
         let body = (<Fragment>
             <span className="text-right  text-muted d-block">
@@ -64,7 +77,7 @@ class BlogCard extends Component {
                 <div class="modal fade" id="blogModal" tabindex="-1" role="dialog" aria-labelledby="chirpsModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
-                        <BlogEdit edit={true} blog={blog} />
+                        <BlogEdit edit={true} blog={blog} tags={tags} location={this.props.location} id={this.props.match.params.id} />
                     </div>
                 </div>
             </Fragment>
