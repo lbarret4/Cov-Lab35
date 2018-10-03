@@ -12,22 +12,32 @@ class BlogEdit extends Component {
         this.state = {
             redirect: false
         }
+        if (this.props.edit) {
+            this.state.title = null;
+            this.state.content = null;
+
+        }
         this.handlesEdit = this.handlesEdit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handlesClose = this.handlesClose.bind(this);
     }
 
+    // componentWillMount() {
+    //     if(this.props.edit) {
+    //         this.setState({
+    //             title: this.props.blog ? '' : this.props.blog.title
+    //         })
+    //     }
+    // }
 
-
-    componentWillReceiveProps() {
-        if (this.props.edit) {
-            console.log("edit", this.props.blog);
-            this.setState({
-                title: this.props.blog.title,
-                content: this.props.blog.content
-                // tags:props.tags;
-            });
-        }
+    componentDidUpdate() {
+    
+        if(this.props.edit && this.props.blog && this.state.title === null && this.state.content === null) {
+                    this.setState({
+                        title:this.props.blog.title,
+                        content:this.props.blog.content
+                    })
+                }
 
     }
 
@@ -76,7 +86,7 @@ class BlogEdit extends Component {
             });
         } else if (target.type === 'textarea') {
             this.setState({
-                title: target.value
+                content: target.value
             });
         }
     }
