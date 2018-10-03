@@ -22,27 +22,19 @@ class BlogEdit extends Component {
         this.handlesClose = this.handlesClose.bind(this);
     }
 
-    // componentWillMount() {
-    //     if(this.props.edit) {
-    //         this.setState({
-    //             title: this.props.blog ? '' : this.props.blog.title
-    //         })
-    //     }
-    // }
-
     componentDidUpdate() {
-    
-        if(this.props.edit && this.props.blog && this.state.title === null && this.state.content === null) {
-                    this.setState({
-                        title:this.props.blog.title,
-                        content:this.props.blog.content
-                    })
-                }
+
+        if (this.props.edit && this.props.blog && this.state.title === null && this.state.content === null) {
+            this.setState({
+                title: this.props.blog.title,
+                content: this.props.blog.content
+            })
+        }
 
     }
 
     handleSubmit(e) {
-        alert('submitted post');
+
         let tags = []
         let blog = {};
         for (let item of e.target) {
@@ -50,27 +42,11 @@ class BlogEdit extends Component {
             if (item.type === 'text' && item.name !== 'otherText') blog.title = item.value;
             if (item.type === 'textarea') blog.content = item.value;
         }
-
-        (async () => {
-            try {
-                let res1 = await blogsService.insert(blog);
-                res1 = await res1.json();
-                let id = await res1.id;
-                tags.forEach(async (element) => {
-
-                    let blogTag = {};
-                    blogTag.blogid = id;
-                    blogTag.tagid = element;
-
-
-                    let res2 = await blogtagsService.insert(blogTag);
-                });
-            } catch (error) {
-                console.log(error);
-            }
-
-        })();
-
+        if (this.props.edit) {
+            this.edit([...tags], blog, this.props.id);
+        } else {
+            this.post([...tags], blog);
+        }
         e.preventDefault();
         this.setState({
             redirect: true
@@ -98,28 +74,66 @@ class BlogEdit extends Component {
         }
 
     }
+    async post(tags, blog) {
+        alert('submitted post');
+        try {
+            let res1 = await blogsService.insert(blog);
+            let id = await res1.id;
+            tags.forEach(async (element) => {
+                let blogTag = {};
+                blogTag.blogid = id;
+                blogTag.tagid = element;
+                let res2 = await blogtagsService.insert(blogTag);
+            });
+        } catch (error) {
+            console.log(error);
+        }
+
+
+
+
+    }
+
+    async edit(tags, blog, id) {
+        alert('submitted changes to post');
+        console.log(this.props.location.pathname);
+        try {
+            let res1 = await blogsService.update(id, blog);
+            await blogtagsService.destroy(id);
+            tags.forEach(async (element) => {
+                let blogTag = {};
+                blogTag.blogid = id;
+                blogTag.tagid = element;
+                let res2 = await blogtagsService.insert(blogTag);
+            });
+
+        } catch (error) {
+
+        }
+
+    }
+
 
 
 
     render() {
-        let btn;
+        let closeBtn;
         let titleInput;
         let textareaInput;
+        let saveBtn;
         if (this.props.edit) {
-            // console.log(this.props.blog);
-            // console.log(this.state);
-            console.log(this.state.title);
-            console.log(this.state.content);
-            btn = <button type="button" className="close" data-toggle="modal" data-target="#blogModal">
+            closeBtn = <button type="button" className="close" data-toggle="modal" data-target="#blogModal">
                 <span ariaHidden="true" >&times;</span>
             </button>;
+            saveBtn = <button type="submit" className="btn btn-primary" data-toggle="modal" data-target="#blogModal">Save changes</button>;
             titleInput = <input type="text" className="form-control" id="blog_title" placeholder="Blog Title" value={this.state.title} onChange={this.handlesEdit} />;
             textareaInput = <textarea className="form-control" placeholder="Blog" value={this.state.content} onChange={this.handlesEdit} />;
 
         } else {
-            btn = <button type="button" className="close" onClick={this.handlesClose}>
+            closeBtn = <button type="button" className="close" onClick={this.handlesClose}>
                 <span ariaHidden="true">&times;</span>
             </button>;
+            saveBtn = <button type="submit" className="btn btn-primary" >Submit post</button>;
             titleInput = <input type="text" className="form-control" id="blog_title" placeholder="Blog Title" />;
             textareaInput = <textarea className="form-control" placeholder="Blog" />;
         }
@@ -127,10 +141,11 @@ class BlogEdit extends Component {
         return (
             <Fragment>
                 {this.state.redirect ? <Redirect to="/" /> : ' '}
+
                 <div className="modal-content my-1">
                     <div className="modal-header">
                         <h5 className="modal-title">Post a blog</h5>
-                        <span>{btn}</span>
+                        <span>{closeBtn}</span>
                     </div>
                     <div className="modal-body">
                         <form onSubmit={this.handleSubmit}>
@@ -141,10 +156,9 @@ class BlogEdit extends Component {
                                 {textareaInput}
 
                             </div>
-                            <Tags />
+                            <Tags edit={this.props.edit} tags={this.props.tags} />
                             <div className="modal-footer">
-
-                                <button type="submit" className="btn btn-primary" >Save changes</button>
+                                {saveBtn}
                             </div>
 
                         </form>
