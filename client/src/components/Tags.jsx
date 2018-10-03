@@ -18,8 +18,8 @@ class Tags extends Component {
     }
 
     async componentDidMount() {
-    
-        try {          
+
+        try {
             let data = await tagsService.all();
             data.push({ name: 'other', '_created': `${new Date(Date.now())}` });
             data = await data.map((tag) => {
@@ -35,6 +35,23 @@ class Tags extends Component {
             console.log(error);
         }
 
+    }
+
+    componentDidUpdate(prevProps) {
+        let checkedTag = this.props.tags;
+        if (this.props.edit && checkedTag && checkedTag !== prevProps.tags) {
+            let tags = this.state.tags;
+            tags = tags.map((tag) => {              
+                checkedTag.forEach((item) => {                  
+                    if (item.props.children === tag.name) tag.checked = true;
+                });
+                return tag;
+            });
+            this.setState({
+                tags
+            });
+
+        }   
     }
     handlesOnChange(e) {
         let target = e.target;
@@ -90,7 +107,7 @@ class Tags extends Component {
             tag["_created"] = new Date(Date.now());
             tag = JSON.parse(JSON.stringify(tag));
             tag["_created"] = tag["_created"].slice(0, -1);
-       
+
             (async () => {
                 try {
                     let results = await tagsService.insert(tag);
